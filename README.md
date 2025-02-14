@@ -9,16 +9,16 @@ To include it in your Django project, add it to your `INSTALLED_APPS` setting:
 ```python
 INSTALLED_APPS = [
     ...
-    'msgraph_backend',
+    'msgraph_email',
 ]
 # or 
-INSTALLED_APPS = INSTALLED_APPS + ('msgraph_backend',)
+INSTALLED_APPS = INSTALLED_APPS + ('msgraph_email',)
 ```
 
 Then add the following to your `settings.py` file:
 
 ```python
-EMAIL_BACKEND = 'msgraph_backend.MicrosoftGraphEmailBackend'
+EMAIL_BACKEND = 'msgraph_email.MicrosoftGraphEmailBackend'
 GRAPH_API_CREDENTIALS = {
     'client_id': 'your-client-id',
     'client_secret': 'your-client-secret',

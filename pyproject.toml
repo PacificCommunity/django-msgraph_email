@@ -3,9 +3,9 @@ requires = ["setuptools", "django"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "django-msgraph_backend"
+name = "django-msgraph_email"
 version = "1.0.0"
-authors = [{ name = "Kishan Kumar", email = "kishank@gspc.int" }]
+authors = [{ name = "Kishan Kumar", email = "kishank@gspc.int" }, { name = "Thomas Tilak", email = "thomasti@spc.int"}]
 description = "A Microsoft Graph Email Backend for Django using msal."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -23,6 +23,6 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/PacificCommunity/django-msgraph_backend"
-Repository = "https://github.com/PacificCommunity/django-msgraph_backend"
-Issues = "https://github.com/PacificCommunity/django-msgraph_backend/issues"
+Homepage = "https://github.com/thhomas/django-msgraph_email"
+Repository = "https://github.com/thhomas/django-msgraph_email"
+Issues = "https://github.com/thhomas/django-msgraph_email/issues"
