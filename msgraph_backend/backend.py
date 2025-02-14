@@ -8,14 +8,19 @@ import logging
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 class MicrosoftGraphEmailBackend(BaseEmailBackend):
     """
     A Django email backend that sends emails using the Microsoft Graph API.
     """
+
     def __init__(self, fail_silently=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fail_silently = fail_silently
-        logger.debug("MicrosoftGraphEmailBackend initialized with fail_silently=%s", self.fail_silently)
+        logger.debug(
+            "MicrosoftGraphEmailBackend initialized with fail_silently=%s",
+            self.fail_silently,
+        )
 
     def get_access_token(self):
         """
@@ -26,10 +31,10 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
 
             # MSAL client application with optional token caching
             app = msal.ConfidentialClientApplication(
-                client_id=settings.GRAPH_API_CREDENTIALS['client_id'],
-                client_credential=settings.GRAPH_API_CREDENTIALS['client_secret'],
+                client_id=settings.GRAPH_API_CREDENTIALS["client_id"],
+                client_credential=settings.GRAPH_API_CREDENTIALS["client_secret"],
                 authority=authority,
-                token_cache=msal.SerializableTokenCache()  # Enable token caching for better performance
+                token_cache=msal.SerializableTokenCache(),  # Enable token caching for better performance
             )
             scopes = ["https://graph.microsoft.com/.default"]
 
@@ -37,7 +42,9 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
             # Attempt silent token acquisition
             result = app.acquire_token_silent(scopes, account=None)
             if not result:
-                logger.info("Silent token acquisition failed. Attempting to acquire a new token.")
+                logger.info(
+                    "Silent token acquisition failed. Attempting to acquire a new token."
+                )
                 result = app.acquire_token_for_client(scopes=scopes)
 
             if "access_token" in result:
@@ -47,7 +54,9 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
             # Log failure
             logger.error(f"Failed to retrieve access token: {result}")
             if not self.fail_silently:
-                raise Exception("Unable to retrieve access token for Microsoft Graph API.")
+                raise Exception(
+                    "Unable to retrieve access token for Microsoft Graph API."
+                )
         except Exception as e:
             logger.exception("An error occurred while retrieving the access token.")
             if not self.fail_silently:
@@ -78,31 +87,41 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
         """
         endpoint = f"https://graph.microsoft.com/v1.0/users/{settings.GRAPH_API_CREDENTIALS['mail_from']}/sendMail"
         email_msg = {
-            'message': {
-                'subject': email.subject,  # Subject of the email
-                'body': {
-                    'contentType': "HTML",  # Specify the format of the email body
-                    'content': email.body  # The actual email content
+            "message": {
+                "subject": email.subject,  # Subject of the email
+                "body": {
+                    "contentType": "HTML",  # Specify the format of the email body
+                    "content": email.body,  # The actual email content
                 },
-                'toRecipients': [{'emailAddress': {'address': addr}} for addr in email.to],  # List of recipients
-                'ccRecipients': [{'emailAddress': {'address': addr}} for addr in email.cc or []],  # CC recipients
-                'bccRecipients': [{'emailAddress': {'address': addr}} for addr in email.bcc or []],  # BCC recipients
+                "toRecipients": [
+                    {"emailAddress": {"address": addr}} for addr in email.to
+                ],  # List of recipients
+                "ccRecipients": [
+                    {"emailAddress": {"address": addr}} for addr in email.cc or []
+                ],  # CC recipients
+                "bccRecipients": [
+                    {"emailAddress": {"address": addr}} for addr in email.bcc or []
+                ],  # BCC recipients
             },
-            'saveToSentItems': 'true'  # Save the email to the "Sent Items" folder
+            "saveToSentItems": "true",  # Save the email to the "Sent Items" folder
         }
 
         try:
             logger.debug("Making POST request to Microsoft Graph API endpoint.")
             response = requests.post(
                 endpoint,
-                headers={'Authorization': f'Bearer {access_token}'},  # Authorization header with access token
+                headers={
+                    "Authorization": f"Bearer {access_token}"
+                },  # Authorization header with access token
                 json=email_msg,  # Email message payload
-                timeout=10  # Timeout in seconds
+                timeout=10,  # Timeout in seconds
             )
             if response.ok:
                 logger.info(f"Email to {email.to} sent successfully.")
                 return True
-            logger.error(f"Failed to send email: {response.status_code} - {response.text}")
+            logger.error(
+                f"Failed to send email: {response.status_code} - {response.text}"
+            )
         except requests.RequestException as e:
             logger.exception(f"An exception occurred while sending the email: {e}")
 
@@ -119,12 +138,19 @@ class MicrosoftGraphEmailBackend(BaseEmailBackend):
             attempt = 0
             while attempt < retries:
                 try:
-                    logger.debug("Attempt %d to send email to: %s", attempt + 1, email.to)
+                    logger.debug(
+                        "Attempt %d to send email to: %s", attempt + 1, email.to
+                    )
                     if self._send_email(email, self.get_access_token()):
                         sent_count += 1
                         break
                 except Exception as e:
-                    logger.warning("Retry %d failed for email to %s: %s", attempt + 1, email.to, str(e))
+                    logger.warning(
+                        "Retry %d failed for email to %s: %s",
+                        attempt + 1,
+                        email.to,
+                        str(e),
+                    )
                     attempt += 1
         logger.debug("Total emails sent after retries: %d", sent_count)
         return sent_count
