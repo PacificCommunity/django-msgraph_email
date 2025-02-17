@@ -2,6 +2,8 @@
 
 An email backend for Django that uses Microsoft Graph to send and receive emails. It uses the `msal` library to retrieve an access token with Microsoft Graph and then uses the Microsoft Graph API to send and receive emails.
 
+Similar to [django-msgraphbackend](https://github.com/danielniccoli/django-msgraphbackend) but with less options and an implementation using the Microsoft Authentication Library (MSAL).
+
 ## Installation
 
 To include it in your Django project, add it to your `INSTALLED_APPS` setting:
